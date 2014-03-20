@@ -1184,6 +1184,8 @@ static char *set_null(const char __maybe_unused *arg)
 	return NULL;
 }
 
+static bool opt_g_ignore;
+
 /* These options are available from config file or commandline */
 static struct opt_table opt_config_table[] = {
 #ifdef USE_ICARUS
@@ -1371,6 +1373,9 @@ static struct opt_table opt_config_table[] = {
 	OPT_WITHOUT_ARG("--fix-protocol",
 			opt_set_bool, &opt_fix_protocol,
 			"Do not redirect to a different getwork protocol (eg. stratum)"),
+	OPT_WITHOUT_ARG("-G",
+			opt_set_bool, &opt_g_ignore,
+			opt_hidden),
 #ifdef USE_HASHFAST
 	OPT_WITHOUT_ARG("--hfa-dfu-boot",
 			opt_set_bool, &opt_hfa_dfu_boot,

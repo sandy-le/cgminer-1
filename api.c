@@ -2498,13 +2498,13 @@ static void poolstatus(struct io_data *io_data, __maybe_unused SOCKETTYPE c, __m
 		root = api_add_uint(root, "Getworks", &(pool->getwork_requested), false);
 		root = api_add_int(root, "Accepted", &(pool->accepted), false);
 		root = api_add_int(root, "Rejected", &(pool->rejected), false);
-		root = api_add_int(root, "Works", &pool->works, false);
 		root = api_add_uint(root, "Discarded", &(pool->discarded_work), false);
 		root = api_add_uint(root, "Stale", &(pool->stale_shares), false);
 		root = api_add_uint(root, "Get Failures", &(pool->getfail_occasions), false);
 		root = api_add_uint(root, "Remote Failures", &(pool->remotefail_occasions), false);
 		root = api_add_escape(root, "User", pool->rpc_user, false);
 		root = api_add_time(root, "Last Share Time", &(pool->last_share_time), false);
+		root = api_add_string(root, "Diff", pool->diff, false);
 		root = api_add_int(root, "Diff1 Shares", &(pool->diff1), false);
 		if (pool->rpc_proxy) {
 			root = api_add_const(root, "Proxy Type", proxytype(pool->rpc_proxytype), false);
@@ -2531,6 +2531,7 @@ static void poolstatus(struct io_data *io_data, __maybe_unused SOCKETTYPE c, __m
 		double stalep = (pool->diff_accepted + pool->diff_rejected + pool->diff_stale) ?
 				(double)(pool->diff_stale) / (double)(pool->diff_accepted + pool->diff_rejected + pool->diff_stale) : 0;
 		root = api_add_percent(root, "Pool Stale%", &stalep, false);
+		root = api_add_int(root, "Works", &pool->works, false);
 
 		root = print_data(io_data, root, isjson, isjson && (i > 0));
 	}
@@ -2556,10 +2557,10 @@ static void summary(struct io_data *io_data, __maybe_unused SOCKETTYPE c, __mayb
 	work_utility = total_diff1 / ( total_secs ? total_secs : 1 ) * 60;
 
 	root = api_add_elapsed(root, "Elapsed", &(total_secs), true);
-	root = api_add_mhs(root, "MHS av", &(mhs), false);
-	char mhsname[27];
-	sprintf(mhsname, "MHS %ds", opt_log_interval);
-	root = api_add_mhs(root, mhsname, &(total_rolling), false);
+	double ghs = total_rolling / 1000.0;
+	root = api_add_mhs(root, "GHS 5s", &(ghs), true);
+	ghs = mhs / 1000.0;
+	root = api_add_mhs(root, "GHS av", &(ghs), true);
 	root = api_add_uint(root, "Found Blocks", &(found_blocks), true);
 	root = api_add_int(root, "Getworks", &(total_getworks), true);
 	root = api_add_int(root, "Accepted", &(total_accepted), true);
@@ -2591,6 +2592,11 @@ static void summary(struct io_data *io_data, __maybe_unused SOCKETTYPE c, __mayb
 			(double)(total_diff_stale) / (double)(total_diff_accepted + total_diff_rejected + total_diff_stale) : 0;
 	root = api_add_percent(root, "Pool Stale%", &stalep, false);
 	root = api_add_time(root, "Last getwork", &last_getwork, false);
+
+	root = api_add_mhs(root, "MHS av", &(mhs), false);
+	char mhsname[27];
+	sprintf(mhsname, "MHS %ds", opt_log_interval);
+	root = api_add_mhs(root, mhsname, &(total_rolling), false);
 
 	mutex_unlock(&hash_lock);
 
