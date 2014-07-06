@@ -250,6 +250,7 @@ int opt_minion_chipreport;
 char *opt_minion_cores;
 char *opt_minion_freq;
 bool opt_minion_idlecount;
+bool opt_minion_noautofreq;
 bool opt_minion_overheat;
 char *opt_minion_temp;
 #endif
@@ -1357,6 +1358,9 @@ static struct opt_table opt_config_table[] = {
 	OPT_WITHOUT_ARG("--minion-idlecount",
 		     opt_set_bool, &opt_minion_idlecount,
 		     "Report when IdleCount is >0 or changes"),
+	OPT_WITHOUT_ARG("--minion-noautofreq",
+		     opt_set_bool, &opt_minion_noautofreq,
+		     "Disable automatic frequency adjustment"),
 	OPT_WITHOUT_ARG("--minion-overheat",
 		     opt_set_bool, &opt_minion_overheat,
 		     "Enable directly halting any chip when the status exceeds 100C"),
@@ -2111,7 +2115,7 @@ static void gbt_merkle_bins(struct pool *pool, json_t *transaction_arr)
 	memset(hashbin, 0, 32);
 	binleft = binlen / 32;
 	if (pool->transactions) {
-		int len = 1, ofs = 0;
+		int len = 0, ofs = 0;
 		const char *txn;
 
 		for (i = 0; i < pool->transactions; i++) {
