@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Andrew Smith
+ * Copyright 2013-2014 Andrew Smith
  * Copyright 2013-2014 Con Kolivas
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -1370,7 +1370,7 @@ struct work *bflsc_work_by_uid(struct cgpu_info *bflsc, struct bflsc_info *sc_in
 static void process_nonces(struct cgpu_info *bflsc, int dev, char *xlink, char *data, int count, char **fields, int *nonces)
 {
 	struct bflsc_info *sc_info = (struct bflsc_info *)(bflsc->device_data);
-	struct thr_info *thr = bflsc->thr[0];
+	struct thr_info *thr = sc_info->thr;
 	struct work *work;
 	int8_t core = -1;
 	uint32_t nonce;
@@ -1660,6 +1660,8 @@ static bool bflsc_thread_prepare(struct thr_info *thr)
 {
 	struct cgpu_info *bflsc = thr->cgpu;
 	struct bflsc_info *sc_info = (struct bflsc_info *)(bflsc->device_data);
+
+	sc_info->thr = thr;
 
 	if (thr_info_create(&(sc_info->results_thr), NULL, bflsc_get_results, (void *)bflsc)) {
 		applog(LOG_ERR, "%s%i: thread create failed", bflsc->drv->name, bflsc->device_id);
