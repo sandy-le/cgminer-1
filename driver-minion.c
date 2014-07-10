@@ -72,6 +72,10 @@ static int minion_memory_addr = BCM2835_GPIO_BASE;
 #else
 #define MINION_SPI_SPEED 500000
 #endif
+
+// modify by sandy, 2014-07-10, make spi speed be 500KHz
+#define MINION_SPI_SPEED 500000
+
 #define MINION_SPI_BUFSIZ 1024
 
 static struct minion_select_pins {
@@ -172,8 +176,9 @@ static struct minion_select_pins {
 #define MINION_SYS_SIZ DATA_SIZ
 
 // Header Pin 18 = GPIO5 = BCM 24
-#define MINION_GPIO_RESULT_INT_PIN 24
-// RockChip is pin 172 ...
+// #define MINION_GPIO_RESULT_INT_PIN 24
+// modify by sandy, 2014-07-10, RockChip is pin 172 ...
+#define MINION_GPIO_RESULT_INT_PIN 172
 
 #define MINION_GPIO_SYS "/sys/class/gpio"
 #define MINION_GPIO_ENA "/export"
@@ -1752,6 +1757,8 @@ static bool minion_init_spi(struct cgpu_info *minioncgpu, struct minion_info *mi
 		if (minioninfo->spifd < 0)
 			goto bad_out;
 	} else {
+		// modify by sandy, 2014-07-10, don't need modprobe
+		/*
 		for (i = 0; minion_modules[i]; i++) {
 			snprintf(buf, sizeof(buf), "modprobe %s", minion_modules[i]);
 			err = system(buf);
@@ -1762,6 +1769,7 @@ static bool minion_init_spi(struct cgpu_info *minioncgpu, struct minion_info *mi
 				goto bad_out;
 			}
 		}
+		*/
 
 		snprintf(buf, sizeof(buf), "/dev/spidev%d.%d", bus, chip);
 		minioninfo->spifd = open(buf, O_RDWR);
