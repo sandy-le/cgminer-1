@@ -237,6 +237,7 @@ static inline int fsync (int fd)
 	DRIVER_ADD_COMMAND(bitfury) \
 	DRIVER_ADD_COMMAND(cointerra) \
 	DRIVER_ADD_COMMAND(hashfast) \
+	DRIVER_ADD_COMMAND(hashratio) \
 	DRIVER_ADD_COMMAND(icarus) \
 	DRIVER_ADD_COMMAND(klondike) \
 	DRIVER_ADD_COMMAND(knc) \
@@ -244,7 +245,8 @@ static inline int fsync (int fd)
 	DRIVER_ADD_COMMAND(drillbit) \
 	DRIVER_ADD_COMMAND(bab) \
 	DRIVER_ADD_COMMAND(minion) \
-	DRIVER_ADD_COMMAND(spondoolies)
+	DRIVER_ADD_COMMAND(sp10) \
+	DRIVER_ADD_COMMAND(sp30)
 
 #define DRIVER_PARSE_COMMANDS(DRIVER_ADD_COMMAND) \
 	FPGA_PARSE_COMMANDS(DRIVER_ADD_COMMAND) \
@@ -1023,9 +1025,17 @@ extern bool opt_bitmain_tempoverctrl;
 extern int opt_minion_chipreport;
 extern char *opt_minion_cores;
 extern char *opt_minion_freq;
+extern int opt_minion_freqchange;
+extern int opt_minion_freqpercent;
 extern bool opt_minion_idlecount;
+extern int opt_minion_ledcount;
+extern int opt_minion_ledlimit;
 extern bool opt_minion_noautofreq;
 extern bool opt_minion_overheat;
+extern int opt_minion_spidelay;
+extern char *opt_minion_spireset;
+extern int opt_minion_spisleep;
+extern int opt_minion_spiusec;
 extern char *opt_minion_temp;
 #endif
 #ifdef USE_USBUTILS
@@ -1085,6 +1095,10 @@ extern pthread_cond_t restart_cond;
 extern void clear_stratum_shares(struct pool *pool);
 extern void clear_pool_work(struct pool *pool);
 extern void set_target(unsigned char *dest_target, double diff);
+#if defined (USE_AVALON2) || defined (USE_HASHRATIO)
+bool submit_nonce2_nonce(struct thr_info *thr, struct pool *pool, struct pool *real_pool,
+			 uint32_t nonce2, uint32_t nonce);
+#endif
 extern int restart_wait(struct thr_info *thr, unsigned int mstime);
 
 extern void kill_work(void);
@@ -1194,6 +1208,7 @@ struct pool {
 	bool submit_old;
 	bool removed;
 	bool lp_started;
+	bool blocking;
 
 	char *hdr_path;
 	char *lp_url;

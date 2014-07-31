@@ -2,7 +2,7 @@
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 m4_define([v_maj], [4])
 m4_define([v_min], [4])
-m4_define([v_mic], [1])
+m4_define([v_mic], [2])
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 m4_define([v_ver], [v_maj.v_min.v_mic])
 m4_define([lt_rev], m4_eval(v_maj + v_min))
@@ -244,6 +244,17 @@ if test "x$hashfast" = xyes; then
 fi
 AM_CONDITIONAL([HAS_HASHFAST], [test x$hashfast = xyes])
 
+hashratio="no"
+
+AC_ARG_ENABLE([hashratio],
+	[AC_HELP_STRING([--enable-hashratio],[Compile support for Hashratio (default disabled)])],
+	[hashratio=$enableval]
+	)
+if test "x$hashratio" = xyes; then
+	AC_DEFINE([USE_HASHRATIO], [1], [Defined to 1 if Hashratiosupport is wanted])
+fi
+AM_CONDITIONAL([HAS_HASHRATIO], [test x$hashratio = xyes])
+
 icarus="no"
 
 AC_ARG_ENABLE([icarus],
@@ -314,16 +325,29 @@ AM_CONDITIONAL([HAS_MODMINER], [test x$modminer = xyes])
 
 
 
-spondoolies="no"
+sp10="no"
 
-AC_ARG_ENABLE([spondoolies],
-	[AC_HELP_STRING([--enable-spondoolies],[Compile support for Spondoolies (default disabled)])],
-	[spondoolies=$enableval]
+AC_ARG_ENABLE([sp10],
+	[AC_HELP_STRING([--enable-sp10],[Compile support for Spondoolies SP10 (default disabled)])],
+	[sp10=$enableval]
 	)
-if test "x$spondoolies" = xyes; then
-	AC_DEFINE([USE_SPONDOOLIES], [1], [Defined to 1 if Spondoolies support is wanted])
+if test "x$sp10" = xyes; then
+	AC_DEFINE([USE_SP10], [1], [Defined to 1 if Spondoolies SP10 support is wanted])
 fi
-AM_CONDITIONAL([HAS_SPONDOOLIES], [test x$spondoolies = xyes])
+AM_CONDITIONAL([HAS_SP10], [test x$sp10 = xyes])
+
+
+
+sp30="no"
+
+AC_ARG_ENABLE([sp30],
+	[AC_HELP_STRING([--enable-sp30],[Compile support for Spondoolies SP30 (default disabled)])],
+	[sp30=$enableval]
+	)
+if test "x$sp30" = xyes; then
+	AC_DEFINE([USE_SP30], [1], [Defined to 1 if SP30 support is wanted])
+fi
+AM_CONDITIONAL([HAS_SP30], [test x$sp30 = xyes])
 
 
 curses="auto"
@@ -350,7 +374,7 @@ else
 	])
 fi
 
-if test x$avalon$bitforce$bitfury$modminer$bflsc$icarus$hashfast$klondike$drillbit$cointerra$ants1$ants2 != xnononononononononononono; then
+if test x$avalon$bitforce$bitfury$modminer$bflsc$icarus$hashfast$hashratio$klondike$drillbit$cointerra$ants1$ants2 != xnonononononononononononono; then
 	want_usbutils=true
 else
 	want_usbutils=false
@@ -405,8 +429,8 @@ fi
 
 AM_CONDITIONAL([WANT_STATIC_LIBUSB], [test x$dlibusb = xno])
 
-AC_CONFIG_SUBDIRS([compat/jansson-2.5])
-JANSSON_LIBS="compat/jansson-2.5/src/.libs/libjansson.a"
+AC_CONFIG_SUBDIRS([compat/jansson-2.6])
+JANSSON_LIBS="compat/jansson-2.6/src/.libs/libjansson.a"
 
 PKG_PROG_PKG_CONFIG()
 
@@ -590,11 +614,19 @@ else
 	echo "  Cointerra.ASICs......: Disabled"
 fi
 
-if test "x$spondoolies" = xyes; then
-	echo "  Spondoolies.ASICs....: Enabled"
+if test "x$sp10" = xyes; then
+	echo "  Spond-sp10.ASICs.....: Enabled"
 else
-	echo "  Spondoolies.ASICs....: Disabled"
+	echo "  Spond-sp10.ASICs.....: Disabled"
 fi
+
+
+if test "x$sp30" = xyes; then
+	echo "  Spond-sp30.ASICs.....: Enabled"
+else
+	echo "  Spond-sp30.ASICs.....: Disabled"
+fi
+
 
 if test "x$bitmine_A1" = xyes; then
 	echo "  Bitmine-A1.ASICs.....: Enabled"
@@ -612,6 +644,12 @@ if test "x$hashfast" = xyes; then
 	echo "  Hashfast.ASICs.......: Enabled"
 else
 	echo "  Hashfast.ASICs.......: Disabled"
+fi
+
+if test "x$hashratio" = xyes; then
+	echo "  Hashratio.ASICs......: Enabled"
+else
+	echo "  Hashratio.ASICs......: Disabled"
 fi
 
 if test "x$icarus" = xyes; then
@@ -638,7 +676,7 @@ else
 	echo "  ModMiner.FPGAs.......: Disabled"
 fi
 
-if test "x$avalon$avalon2$bab$bflsc$bitforce$bitfury$hashfast$icarus$klondike$knc$modminer$drillbit$minion$cointerra$bitmine_A1$ants1$ants2$spondoolies" = xnononononononononononononononononono; then
+if test "x$avalon$avalon2$bab$bflsc$bitforce$bitfury$hashfast$hashratio$icarus$klondike$knc$modminer$drillbit$minion$cointerra$bitmine_A1$ants1$ants2$sp10$sp30" = xnononononononononononononononononononono; then
 	AC_MSG_ERROR([No mining configured in])
 fi
 
