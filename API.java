@@ -7,13 +7,14 @@
  * If any are missing or blank they use the defaults:
  *
  *	command = 'summary'
- *	ip	= '127.0.0.1'
+ *	ip	= '127.0.0.1' w
  *	port	= '4028'
  *
  */
 
 import java.net.*;
 import java.io.*;
+
 
 class API
 {
